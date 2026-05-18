@@ -1,50 +1,52 @@
 import java.util.*;
 
-class A{
-    int index = 1;
-    int count = 0;
-    int[] answer = {1,2,3,4,5};
-    int answerLength = 5;
+abstract class Student{
+    int index;
+    int count;
+    int[] answer;
+    int answerLength;
+
+    Student(int index, int count, int[] answer, int answerLength){
+        this.index = index;
+        this.count = count;
+        this.answer = answer;
+        this.answerLength = answerLength;
+    }
 }
-class B{
-    int index = 2;
-    int count = 0;
-    int[] answer = {2,1,2,3,2,4,2,5};
-    int answerLength = 8;
+class A extends Student{
+    A(){
+        super(1, 0, new int[]{1,2,3,4,5}, 5);
+    }
+}
+class B extends Student{
+    B(){
+        super(2, 0, new int[]{2,1,2,3,2,4,2,5}, 8);
+    }
 }
 
-class C{
-    int index = 3;
-    int count = 0;
-    int[] answer = {3,3,1,1,2,2,4,4,5,5};
-    int answerLength = 10;
+class C extends Student{
+    C(){
+        super(3, 0, new int[]{3, 3, 1, 1, 2, 2, 4, 4, 5, 5}, 10);
+    }
 }
 
 class Solution {
     public int[] solution(int[] answers) {
-        A a = new A();
-        B b = new B();
-        C c = new C();
-
+        Student[] students = {new A(), new B(), new C()};
         int answerLength = answers.length;
         for(int i = 0; i < answerLength; i++){
-            if(a.answer[i % a.answerLength] == answers[i]) a.count++;
-            if(b.answer[i % b.answerLength] == answers[i]) b.count++;
-            if(c.answer[i % c.answerLength] == answers[i]) c.count++;
+            for(Student student : students){
+                if(student.answer[i % student.answerLength] == answers[i]) student.count++;
+            }
         }
 
-        int maxCount = a.count;
-        if(b.count >= maxCount) maxCount = b.count;
-        if(c.count >= maxCount) maxCount = c.count;
+        int maxCount = Arrays.stream(students)
+                .max(Comparator.comparing(student -> student.count))
+                .get().count;
 
-        List<Integer> list = new ArrayList<>();
-
-        System.out.println(maxCount);
-        System.out.println(a.count + " " + b.count + " " + c.count);
-        if(maxCount == a.count) list.add(a.index);
-        if(maxCount == b.count) list.add(b.index);
-        if(maxCount == c.count) list.add(c.index);
-
-        return list.stream().mapToInt(i->i).toArray();
+        return Arrays.stream(students)
+                .filter(student -> student.count == maxCount)
+                .mapToInt(student -> student.index)
+                .toArray();
     }
 }
