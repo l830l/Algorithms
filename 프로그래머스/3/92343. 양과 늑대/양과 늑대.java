@@ -11,26 +11,6 @@ class Animal {
     public Animal(int number) {
         this.number = number;
     }
-
-    public void visit() {
-        this.visited = true;
-    }
-
-    @Override
-    public String toString() {
-        return "Animal{number=" + number + ", visited=" + visited + ")}\n";
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if(!(o instanceof Animal)) return false;
-        return ((Animal) o).number == this.number;
-    }
-
-    @Override
-    public int hashCode() {
-        return this.number;
-    }
 }
 
 // 2. Wolf와 Sheep 클래스를 만든다.
@@ -48,45 +28,12 @@ class Sheep  extends Animal {
         super(number);
         path = new ArrayList<>();
     }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Sheep{");
-        sb.append("number=" + number + " [");
-        for (Animal animal : path) {
-            sb.append(animal instanceof Sheep ? "Sheep" : "Wolf");
-            sb.append("(");
-            sb.append(animal.number);
-            sb.append(") ");
-            sb.append(animal.visited ? "방문" : "미방문");
-            sb.append(" | ");
-            sb.append(animal.checked ? "체킹" : "미체킹");
-            sb.append(", ");
-        }
-        sb.delete(sb.length() - 2, sb.length());
-        sb.append("]");
-        return sb.append("}\n").toString();
-    }
 }
 
 // 7. Owner 클래스를 만들고 속성은 양 마릿수, 늑대 마릿수, 자신의 위치로 한다.
 class Owner {
     int sheepNum;
     int wolfNum;
-
-    void increaseSheep(int num){
-        this.sheepNum += num;
-    }
-
-    void increaseWolf(int num){
-        this.wolfNum += num;
-    }
-
-    @Override
-    public String toString() {
-        return "Owner{sheepNum = "+ sheepNum + ", wolfNum = " + wolfNum + "}\n";
-    }
 }
 
 class Solution {
@@ -150,7 +97,7 @@ class Solution {
                         animal.checked = true;
                         if(animal instanceof Sheep) sheepNum++;
                         else wolfNum++;
-                        
+
                         if(wolfNum >= sheepNum) break secondLoop;
                     }
                 }
@@ -165,11 +112,11 @@ class Solution {
     private List<Sheep> eatSheep(Sheep sheep, Owner owner, List<Sheep> sheepList){
         for(Animal animal : sheep.path){
             if(animal.visited) continue;
-            animal.visit();
+            animal.visited = true;
             animal.checked = true;
             if(owner.sheepNum != 0 && owner.wolfNum >= owner.sheepNum) break;
-            if(animal instanceof Sheep) owner.increaseSheep(1);
-            else owner.increaseWolf(1);
+            if(animal instanceof Sheep) owner.sheepNum += 1;
+            else owner.wolfNum += 1;
         }
         return sheepList.stream().filter(modSheep -> !modSheep.visited).collect(Collectors.toCollection(ArrayList::new));
     }
